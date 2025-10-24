@@ -13,12 +13,12 @@ const GlobalConfig = ({ config, onUpdate }) => {
     <div className="global-config">
       <h3>全局配置</h3>
       <div className="config-item">
-        <label htmlFor="storageFile">存储路径:</label>
+        <label htmlFor="savePath">存储路径:</label>
         <input
           type="text"
-          id="storageFile"
-          value={config.storageFile}
-          onChange={(e) => handleChange('storageFile', e.target.value)}
+          id="savePath"
+          value={config.savePath}
+          onChange={(e) => handleChange('savePath', e.target.value)}
         />
       </div>
       <div className="config-item">

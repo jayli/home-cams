@@ -1,4 +1,4 @@
-// CameraConfigCard.jsx
+// CameraConfigCard.js
 import React from 'react';
 
 const CameraConfigCard = ({ camera, onUpdate, onDelete, onToggleRecording }) => {
@@ -8,6 +8,12 @@ const CameraConfigCard = ({ camera, onUpdate, onDelete, onToggleRecording }) => 
 
   const handleUrlChange = (e) => {
     onUpdate(camera.id, { url: e.target.value });
+  };
+
+  const handleDeleteClick = () => {
+    if (window.confirm('确定要删除这个摄像头吗？')) {
+      onDelete(camera.id);
+    }
   };
 
   return (
@@ -22,9 +28,9 @@ const CameraConfigCard = ({ camera, onUpdate, onDelete, onToggleRecording }) => 
         />
         <button 
           className="delete-btn"
-          onClick={() => onDelete(camera.id)}
+          onClick={handleDeleteClick}
         >
-          删除
+          ×
         </button>
       </div>
       

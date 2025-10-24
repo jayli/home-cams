@@ -1,4 +1,4 @@
-// CameraManager.jsx
+// CameraManager.js
 import React, { useState, useEffect } from 'react';
 import CameraConfigCard from './CameraConfigCard';
 import GlobalConfig from './GlobalConfig';
@@ -6,25 +6,26 @@ import GlobalConfig from './GlobalConfig';
 const CameraManager = () => {
   const [cameras, setCameras] = useState([]);
   const [globalConfig, setGlobalConfig] = useState({
-    storageFile: '~/.home-cam-recordings',
+    savePath: '~/ttt/a/',
     segmentDuration: 15
   });
 
   // 加载配置
   useEffect(() => {
-    const loadConfig = () => {
+    const loadConfig = async () => {
       try {
-        const savedData = localStorage.getItem('home-cam-config');
-        if (savedData) {
-          const config = JSON.parse(savedData);
+        const response = await fetch('/load_config');
+        if (response.ok) {
+          const config = await response.json();
           setCameras(config.cameras || []);
           setGlobalConfig(config.globalConfig || globalConfig);
         } else {
-          // 初始化默认配置
+          // If server returns error, try to initialize default configuration
           saveConfig();
         }
       } catch (error) {
-        console.error('Failed to load config:', error);
+        console.error('Failed to load config from server:', error);
+        alert('无法从服务器加载配置，请检查网络连接或稍后再试。');
       }
     };
 
@@ -32,15 +33,27 @@ const CameraManager = () => {
   }, []);
 
   // 保存配置
-  const saveConfig = (newCameras = cameras, newGlobalConfig = globalConfig) => {
+  const saveConfig = async (newCameras = cameras, newGlobalConfig = globalConfig) => {
     try {
       const config = {
         cameras: newCameras,
         globalConfig: newGlobalConfig
       };
-      localStorage.setItem('home-cam-config', JSON.stringify(config));
+      
+      const response = await fetch('/save_config', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(config)
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status}`);
+      }
     } catch (error) {
-      console.error('Failed to save config:', error);
+      console.error('Failed to save config to server:', error);
+      alert('无法保存配置到服务器，请检查网络连接或稍后再试。');
     }
   };
 
