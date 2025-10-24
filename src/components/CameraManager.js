@@ -61,7 +61,7 @@ const CameraManager = () => {
   const addCamera = () => {
     const newCamera = {
       id: Date.now(),
-      name: `Camera ${cameras.length + 1}`,
+      name: `cam${cameras.length + 1}`,
       url: '',
       isRecording: false
     };
@@ -94,6 +94,24 @@ const CameraManager = () => {
 
   // 切换录制状态
   const toggleRecording = (id) => {
+    // Find the camera that we want to toggle
+    const camera = cameras.find(cam => cam.id === id);
+    
+    // If we're trying to start recording, validate the URL format
+    if (camera && !camera.isRecording) {
+      const url = camera.url.trim();
+      if (url === '') {
+        alert('请输入摄像头地址');
+        return;
+      }
+      
+      if (!/^((http)|(rtsp)):\/\//.test(url)) {
+        alert('摄像头地址格式不正确，必须以 http:// 或 rtsp:// 开头');
+        return;
+      }
+    }
+    
+    // Toggle the recording status
     const newCameras = cameras.map(camera => 
       camera.id === id ? { ...camera, isRecording: !camera.isRecording } : camera
     );
