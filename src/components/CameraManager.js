@@ -121,7 +121,7 @@ const CameraManager = () => {
 
   return (
     <div className="camera-manager">
-      <h1>摄像头管理系统</h1>
+      <h1>Cams Manage Pannel</h1>
       
       <GlobalConfig 
         config={globalConfig}
@@ -129,9 +129,9 @@ const CameraManager = () => {
       />
       
       <div className="cameras-header">
-        <h2>摄像头配置</h2>
+        <h2>Cams配置</h2>
         <button onClick={addCamera} className="add-camera-btn">
-          添加摄像头
+          添加Cams
         </button>
       </div>
       
