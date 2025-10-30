@@ -40,7 +40,7 @@ const CameraManager = () => {
         globalConfig: newGlobalConfig
       };
       
-      const response = await fetch('/save_config', {
+      const response = await fetch('/save_global_config', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -138,3 +138,12 @@
 .record-btn.recording:hover {
   background-color: #e0a800;
 }
+
+.button-group {
+  display: flex;
+  gap: 10px;
+}
+.button-group .record-btn,
+.button-group .save-btn {
+  flex: 1;
+}

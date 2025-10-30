@@ -11,9 +11,20 @@ const CameraConfigCard = ({ camera, onUpdate, onDelete, onToggleRecording }) => 
   };
 
   const handleDeleteClick = () => {
+    // 检查摄像头是否正在录制
+    if (camera.isRecording) {
+      alert('无法删除正在录制的摄像头，请先停止录制');
+      return;
+    }
+    
     if (window.confirm('确定要删除这个摄像头吗？')) {
       onDelete(camera.id);
     }
+  };
+
+  // 修改记录按钮的点击处理函数
+  const handleToggleRecording = () => {
+    onToggleRecording(camera.id);
   };
 
   return (
@@ -43,15 +54,18 @@ const CameraConfigCard = ({ camera, onUpdate, onDelete, onToggleRecording }) => 
             value={camera.url}
             onChange={handleUrlChange}
             placeholder="rtsp:// 或 http:// 流地址"
+            // 当摄像头正在记录时禁用URL输入框
+            disabled={camera.isRecording}
           />
         </div>
-        
-        <button
-          className={`record-btn ${camera.isRecording ? 'recording' : ''}`}
-          onClick={() => onToggleRecording(camera.id)}
-        >
-          {camera.isRecording ? '停止记录' : '开始记录'}
-        </button>
+        <div className="button-group">
+          <button
+            className={`record-btn ${camera.isRecording ? 'recording' : ''}`}
+            onClick={handleToggleRecording}
+          >
+            {camera.isRecording ? '停止记录' : '开始记录'}
+          </button>
+        </div>
       </div>
     </div>
   );

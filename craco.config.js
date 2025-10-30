@@ -21,6 +21,7 @@ module.exports = {
       }
 
       // 配置文件路径
+      const configRoot = path.join(__dirname, 'cams-config/');
       const configPath = path.join(__dirname, 'cams-config.json');
 
       devServer.app.use('/load_config', async (req, res) => {
@@ -48,7 +49,7 @@ module.exports = {
         }
       });
 
-      devServer.app.use('/save_config', async (req, res) => {
+      devServer.app.use('/save_global_config', async (req, res) => {
         try {
           // 获取POST请求体中的数据
           let body = '';
