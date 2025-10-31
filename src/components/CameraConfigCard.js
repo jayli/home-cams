@@ -23,8 +23,8 @@ const CameraConfigCard = ({ camera, onUpdate, onDelete, onToggleRecording }) => 
   };
 
   // 修改记录按钮的点击处理函数
-  const handleToggleRecording = () => {
-    onToggleRecording(camera.id);
+  const handleToggleRecording = async () => {
+    await onToggleRecording(camera.id);
   };
 
   return (

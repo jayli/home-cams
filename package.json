@@ -26,7 +26,8 @@
     ]
   },
   "devDependencies": {
-    "@craco/craco": "^7.1.0"
+    "@craco/craco": "^7.1.0",
+    "rtsp-downloader": "^1.0.8"
   },
   "browserslist": {
     "production": [

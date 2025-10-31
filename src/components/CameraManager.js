@@ -93,7 +93,7 @@ const CameraManager = () => {
   };
 
   // 切换录制状态
-  const toggleRecording = (id) => {
+  const toggleRecording = async (id) => {
     // Find the camera that we want to toggle
     const camera = cameras.find(cam => cam.id === id);
     
@@ -110,11 +110,55 @@ const CameraManager = () => {
         return;
       }
     }
+
+    var newCameras = cameras;
+
+    if (camera.isRecording) {
+      // stopRecorder
+      const response = await fetch('/stop_recorder', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: camera.name
+        })
+      });
+      if (!response.ok) {
+        // not ok
+        throw new Error(`Server returned ${response.status}`);
+      } else {
+        // ok
+        newCameras = cameras.map(camera => 
+          camera.id === id ? { ...camera, isRecording: false } : camera
+        );
+      }
+    } else {
+      // startRecorder
+      const data = {
+        name: camera.name,
+        url: camera.url
+      };
+      
+      const response = await fetch('/start_recorder', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      });
+      
+      if (!response.ok) {
+        // not ok
+        throw new Error(`Server returned ${response.status}`);
+      } else {
+        // ok
+        newCameras = cameras.map(camera => 
+          camera.id === id ? { ...camera, isRecording: true} : camera
+        );
+      }
+    }
     
-    // Toggle the recording status
-    const newCameras = cameras.map(camera => 
-      camera.id === id ? { ...camera, isRecording: !camera.isRecording } : camera
-    );
     setCameras(newCameras);
     saveConfig(newCameras);
   };
