@@ -4,15 +4,15 @@ const https = require('https');
 const { URL } = require('url');
 const fs = require('fs');
 const path = require('path');
-const Recorder = require('rtsp-downloader').Recorder
+const recorderManager = require('./recorderManager');
+const configPath = require('./configPath').configPath;
 
 module.exports = {
   devServer: (devServerConfig, { env, paths, proxy, allowedHost }) => {
+    recorderManager.updateAll();
+
     // 添加自定义代理中间件，模拟Rust中的实现
     devServerConfig.onBeforeSetupMiddleware = (devServer) => {
-      // 配置文件路径
-      const configPath = path.join(path.dirname(__dirname), 'cams-config.json');
-      const recs = {}; // 存储Recorder实例, key 是 camName
 
       function extractTrailingHttpUrl(str) {
         const regex = /\/proxy\/(http|https):\/\/.+$/;
@@ -25,61 +25,6 @@ module.exports = {
           return url;
         }
       }
-
-      function getRecorder(name) {
-        if (recs[name]) {
-          return recs[name];
-        } else {
-          return null;
-        }
-      }
-
-      function delRecorder(name) {
-        if (recs[name]) {
-          recs[name].stopRecording();
-          delete recs[name];
-        }
-      }
-
-      function addRecoder(name, rec) {
-        recs[name] = rec;
-      }
-
-      function stopRecorder(name) {
-        var rec = getRecorder(name);
-        if (rec !== null) {
-          rec.stopRecording();
-        }
-      }
-
-      function isRecording(name) {
-        var rec = getRecorder(name);
-        if (rec === null) {
-          return false;
-        } else {
-          return rec.isRecoding();
-        }
-      }
-
-      function startRecorder(name, camUrl) {
-        const configFileData = fs.readFileSync(configPath, 'utf8');
-        const config = JSON.parse(configFileData);
-        const folder = path.join(config.globalConfig.savePath, '/videos/');
-        const timeLimit = config.globalConfig.segmentDuration;
-
-        delRecorder(name);
-        const rec = new Recorder({
-          url: camUrl,
-          timeLimit:timeLimit,
-          folder: folder,
-          name: name,
-          folderSizeLimit: 510
-        });
-        rec.startRecording();
-        addRecoder(name, rec);
-        return rec;
-      }
-
 
       // post
       // {name:xx, url:xx}
@@ -95,10 +40,11 @@ module.exports = {
             const data = JSON.parse(body);
             const name = data.name;
             const url = data.url;
-            startRecorder(name, url);
+            recorderManager.startRecorder(name, url);
             res.status(200).json({ ok: '摄像头开始录制' });
           } catch (err) {
-            res.status(400).json({ error: err });
+            console.log(err);
+            res.status(400).json({ error: err.message });
           }
         });
       });
@@ -114,10 +60,10 @@ module.exports = {
             // 解析请求体中的JSON数据
             const data = JSON.parse(body);
             const name = data.name;
-            stopRecorder(name);
+            recorderManager.stopRecorder(name);
             res.status(200).json({ ok: '摄像头停止录制' });
           } catch (err) {
-            res.status(400).json({ error: err });
+            res.status(400).json({ error: err.message });
           }
         });
       });
@@ -143,7 +89,7 @@ module.exports = {
           }
         } catch (error) {
           console.error('Error loading config:', error);
-          res.status(500).json({ error: 'Failed to load configuration' });
+          res.status(500).json({ error: error.message });
         }
       });
 
