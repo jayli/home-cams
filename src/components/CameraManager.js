@@ -59,9 +59,23 @@ const CameraManager = () => {
 
   // 添加摄像头
   const addCamera = () => {
+    // 生成一个不重复的摄像头名称
+    let cameraName = '';
+    let cameraIndex = cameras.length + 1;
+    let nameExists = true;
+
+    // 循环检查名称是否已存在，如果存在则递增索引直到找到唯一名称
+    while (nameExists) {
+      cameraName = `cam${cameraIndex}`;
+      nameExists = cameras.some(camera => camera.name === cameraName);
+      if (nameExists) {
+        cameraIndex++;
+      }
+    }
+
     const newCamera = {
       id: Date.now(),
-      name: `cam${cameras.length + 1}`,
+      name: cameraName,
       url: '',
       isRecording: false
     };

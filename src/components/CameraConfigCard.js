@@ -36,6 +36,7 @@ const CameraConfigCard = ({ camera, onUpdate, onDelete, onToggleRecording }) => 
           value={camera.name}
           onChange={handleNameChange}
           placeholder="摄像头名称"
+          disabled={camera.isRecording}
         />
         <button 
           className="delete-btn"
